@@ -1,0 +1,5 @@
+D:\programs\Projects\GIT\IpWatcherService\IpWatcherService\bin\Debug\IpWatcherService.exe
+D:\programs\Projects\GIT\IpWatcherService\IpWatcherService\bin\Debug\IpWatcherService.pdb
+D:\programs\Projects\GIT\IpWatcherService\IpWatcherService\obj\Debug\IpWatcherService.exe
+D:\programs\Projects\GIT\IpWatcherService\IpWatcherService\obj\Debug\IpWatcherService.pdb
+D:\programs\Projects\GIT\IpWatcherService\IpWatcherService\obj\Debug\IpWatcherService.csprojResolveAssemblyReference.cache
