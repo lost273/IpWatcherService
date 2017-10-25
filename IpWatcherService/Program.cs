@@ -15,11 +15,9 @@ namespace IpWatcherService {
             {
                 new Service1()
             };
-
-
             if (Environment.UserInteractive) {
                 #if DEBUG
-                (new Logger()).Start();
+                (new Watcher()).Start();
                 Thread.Sleep(Timeout.Infinite);
                 #else
                 MessageBox.Show("Приложение должно быть установлено в виде службы Windows и не может быть запущено интерактивно.");
@@ -28,11 +26,6 @@ namespace IpWatcherService {
             else {
                 ServiceBase.Run(ServicesToRun);
             }
-
-
-
-
-            
         }
     }
 }

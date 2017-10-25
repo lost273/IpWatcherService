@@ -18,7 +18,7 @@ namespace IpWatcherService {
 
             processInstaller.Account = ServiceAccount.LocalSystem;
             serviceInstaller.StartType = ServiceStartMode.Manual;
-            serviceInstaller.ServiceName = "Service1";
+            serviceInstaller.ServiceName = "IpWatcherService";
             Installers.Add(processInstaller);
             Installers.Add(serviceInstaller);
         }
