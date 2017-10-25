@@ -20,8 +20,8 @@ namespace IpWatcherService {
 
         protected override void OnStart (string[] args) {
             watcher = new Watcher();
-            Thread loggerThread = new Thread(new ThreadStart(watcher.Start));
-            loggerThread.Start();
+            Thread watcherThread = new Thread(new ThreadStart(watcher.Start));
+            watcherThread.Start();
         }
 
         protected override void OnStop () {
@@ -32,22 +32,25 @@ namespace IpWatcherService {
 
     class Watcher {
         bool enabled = true;
+        FileInfo configurationFile = new FileInfo(@"config.cfg");
+        public List<string> recipientsList;
+        public string CurrentIp { get; set; }
+        
         public Watcher () {
-            
+            CurrentIp = this.GetIp();
+            /* 
+            if (IpAdress in file NOT exist) {
+                
+                SendIpOnMail();
+                WriteIpInFile();
+            }
+            */
         }
 
         public void Start () {
-            /*
-             if (IpAdress in file NOT exist) {
-                GetIp();
-                SendIpOnMail();
-                WriteIpInFile();
-             }
-             else CompareIpFromFile();
-             */
             while (enabled) {
                 /*GetIp();
-                CompareIpFromFile();
+                if(CompareIp() == false) Notification();
                 */
                 using (StreamWriter writer = new StreamWriter("D:\\templog.txt", true)) {
                     writer.WriteLine(String.Format("test"));
@@ -58,6 +61,10 @@ namespace IpWatcherService {
         }
         public void Stop () {
             enabled = false;
+        }
+        // Method receive external IP
+        public string GetIp () {
+            return "";
         }
     }
 }
