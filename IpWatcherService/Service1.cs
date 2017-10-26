@@ -38,13 +38,9 @@ namespace IpWatcherService {
         
         public Watcher () {
             CurrentIp = this.GetIp();
-            /* 
-            if (IpAdress in file NOT exist) {
-                
-                SendIpOnMail();
-                WriteIpInFile();
-            }
-            */
+            // if file not exist - return false
+            enabled = this.ReadConfigurationValues();
+            
         }
 
         public void Start () {
@@ -62,9 +58,13 @@ namespace IpWatcherService {
         public void Stop () {
             enabled = false;
         }
-        // Method receive external IP
+        // method receive external IP
         public string GetIp () {
             return "";
+        }
+        // method receive values from configuration file
+        public bool ReadConfigurationValues () {
+            return true;
         }
     }
 }
