@@ -35,22 +35,27 @@ namespace IpWatcherService {
         FileInfo configurationFile = new FileInfo(@"config.cfg");
         public List<string> recipientsList;
         public string CurrentIp { get; set; }
-        
+        public string OldIp { get; set; }
+        public string SenderAddress { get; set; }
+        public string SenderName { get; set; }
+        public string SenderSmtp { get; set; }
+        public string SenderLogin { get; set; }
+        public string SenderPass { get; set; }
+        public string SenderPort { get; set; }
         public Watcher () {
             CurrentIp = this.GetIp();
             // if file not exist - return false
             enabled = this.ReadConfigurationValues();
-            
         }
 
         public void Start () {
             while (enabled) {
-                /*GetIp();
-                if(CompareIp() == false) Notification();
-                */
-                using (StreamWriter writer = new StreamWriter("D:\\templog.txt", true)) {
-                    writer.WriteLine(String.Format("test"));
-                    writer.Flush();
+                CurrentIp = this.GetIp();
+                if (CurrentIp != OldIp) {
+                    Notification();
+                    OldIp = CurrentIp;
+                    WriteIpToFile();
+                    MakeLog();
                 }
                 Thread.Sleep(6000);
             }
@@ -63,8 +68,24 @@ namespace IpWatcherService {
             return "";
         }
         // method receive values from configuration file
+        // check the values to null
         public bool ReadConfigurationValues () {
             return true;
+        }
+        // notify the user of a change IP
+        public void Notification () {
+            enabled = this.ReadConfigurationValues();
+        }
+        // write current IP to configuration file
+        public void WriteIpToFile () {
+
+        }
+        // register events
+        public void MakeLog () {
+            using (StreamWriter writer = new StreamWriter("templog.txt", true)) {
+                writer.WriteLine(String.Format("test"));
+                writer.Flush();
+            }
         }
     }
 }
