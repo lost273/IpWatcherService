@@ -34,7 +34,7 @@ namespace IpWatcherService {
 
     class Watcher {
         bool enabled = true;
-        FileInfo configurationFile = new FileInfo(@"config.cfg");
+        string configurationFile ="config.txt";
         string logFile = "templog.txt";
         public List<string> recipientsList;
         public string CurrentIp { get; set; }
@@ -45,15 +45,14 @@ namespace IpWatcherService {
         public string SenderLogin { get; set; }
         public string SenderPass { get; set; }
         public string SenderPort { get; set; }
-        public Watcher () {
-            CurrentIp = this.GetIp();
-            // if file not exist - return false
-            enabled = this.ReadConfigurationValues();
-        }
-
         public void Start () {
+            // if file not exist, create them, return false
+            enabled = ReadConfigurationValues();
             while (enabled) {
                 CurrentIp = this.GetIp();
+                //Notification every morning in 08:00
+                if (DateTime.Now.ToShortTimeString() == "8:00") { Notification(); }
+                //Notification if Ip was change
                 if ((CurrentIp != OldIp) && (CurrentIp != "error")){
                     Notification();
                     OldIp = CurrentIp;
@@ -87,13 +86,33 @@ namespace IpWatcherService {
             }
         }
         // method receive values from configuration file
-        // check the values to null
+        // check the values to null/empty_string
         public bool ReadConfigurationValues () {
-            return true;
+            if ((new FileInfo(configurationFile)).Exists) {
+                using (StreamReader sr = new StreamReader(configurationFile)) {
+                    while (sr.Peek() >= 0) {
+                        ValuesChoicer(sr.ReadLine());
+                    }
+                }
+                return true;
+            }
+            else {
+                using (StreamWriter sw = new StreamWriter(configurationFile, false, System.Text.Encoding.Default)) {
+                    sw.WriteLine("OLD_IP =");
+                    sw.WriteLine("SENDER_ADDRESS =");
+                    sw.WriteLine("SENDER_NAME =");
+                    sw.WriteLine("SENDER_SMTP =");
+                    sw.WriteLine("SENDER_LOGIN =");
+                    sw.WriteLine("SENDER_PASS =");
+                    sw.WriteLine("SENDER_PORT =");
+                    sw.WriteLine("RECIPIENT =");
+                    sw.WriteLine("RECIPIENT =");
+                }
+                return false;
+            }
         }
         // notify the user of a change IP
         public void Notification () {
-            enabled = this.ReadConfigurationValues();
             foreach (string recipient in recipientsList) {
                 // set the address of the sender and the name displayed in the letter
                 MailAddress from = new MailAddress(SenderAddress, SenderName);
@@ -125,9 +144,12 @@ namespace IpWatcherService {
         // register events
         public void MakeLog () {
             using (StreamWriter writer = new StreamWriter(logFile, true)) {
-                writer.WriteLine(String.Format("test"));
+                writer.WriteLine(String.Format(DateTime.Now.ToString()));
                 writer.Flush();
             }
+        }
+        public void ValuesChoicer (string valueFromFile) {
+
         }
     }
 }
