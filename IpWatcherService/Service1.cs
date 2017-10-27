@@ -68,7 +68,7 @@ namespace IpWatcherService {
         public void Stop () {
             enabled = false;
         }
-        // method receive external IP
+        // method receive an external IP
         public string GetIp () {
             StreamReader reader;
             HttpWebRequest httpWebRequest;
@@ -88,8 +88,8 @@ namespace IpWatcherService {
                 return "error";
             }
         }
-        // method receive values from configuration file
-        // check the values to null/empty_string
+        // method receive a values from configuration file
+        // check a values to null/empty_string
         public bool ReadConfigurationValues () {
             if ((new FileInfo(configurationFile)).Exists) {
                 using (StreamReader sr = new StreamReader(configurationFile)) {
@@ -109,10 +109,10 @@ namespace IpWatcherService {
                 return false;
             }
         }
-        // notify the user of a change IP
+        // notify a user of a change IP
         public void Notification () {
             foreach (string recipient in recipientsList) {
-                // set the address of the sender and the name displayed in the letter
+                // set an address of sender and a name displayed in letter
                 MailAddress from = new MailAddress(SenderAddress, SenderName);
                 // set the address of the recipient
                 MailAddress to = new MailAddress(recipient);
@@ -128,8 +128,7 @@ namespace IpWatcherService {
                 m.IsBodyHtml = true;
                 // set smtp-server's address and port
                 SmtpClient smtp = new SmtpClient(SenderSmtp, Convert.ToInt32(SenderPort, 10));
-                // логин и пароль
-                //
+                //set login and pass
                 smtp.Credentials = new NetworkCredential(SenderLogin, SenderPass);
                 smtp.EnableSsl = true;
                 smtp.Send(m);
@@ -139,15 +138,22 @@ namespace IpWatcherService {
         public void WriteIpToFile () {
 
         }
-        // register events
+        // register an events
         public void MakeLog () {
             using (StreamWriter writer = new StreamWriter(logFile, true)) {
                 writer.WriteLine(String.Format(DateTime.Now.ToString()));
                 writer.Flush();
             }
         }
+        // fill a properties
         public bool ValuesChoicer (string valueFromFile) {
-
+            // delete a space between words
+            valueFromFile.Replace(" ","");
+            for (int i = 0; configurationValues[0, i] != "END"; i++) {
+                if (valueFromFile.StartsWith(configurationValues[0, i])) {
+                    configurationValues[1, i] = valueFromFile.Replace(configurationValues[0, i],"");
+                }
+            }
             return false;
         }
     }
