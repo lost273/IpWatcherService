@@ -37,7 +37,7 @@ namespace IpWatcherService {
         string configurationFile ="config.txt";
         string logFile = "templog.txt";
         string[,] configurationValues = { 
-            { "OLD_IP =", "SENDER_ADDRESS =", "SENDER_NAME =", "SENDER_SMTP =", "SENDER_LOGIN =", "SENDER_PASS =", "SENDER_PORT =", "RECIPIENT =","END"},
+            { "OLD_IP=", "SENDER_ADDRESS=", "SENDER_NAME=", "SENDER_SMTP=", "SENDER_LOGIN=", "SENDER_PASS=", "SENDER_PORT=", "RECIPIENT=","END"},
         };
         public List<string> recipientsList;
         public string CurrentIp { get; set; }
@@ -89,7 +89,6 @@ namespace IpWatcherService {
             }
         }
         // method receive a values from configuration file
-        // check a values to null/empty_string
         public bool ReadConfigurationValues () {
             if ((new FileInfo(configurationFile)).Exists) {
                 using (StreamReader sr = new StreamReader(configurationFile)) {
@@ -97,6 +96,20 @@ namespace IpWatcherService {
                         if(ValuesChoicer(sr.ReadLine()) == false) return false;
                     }
                 }
+                // check a values to null/empty_string and fill a properties
+                for (int i = 0; configurationValues[0, i] != "END"; i++) {
+                    // if value is empty
+                    if (configurationValues[1, i] == "") {
+                        return false;
+                    }
+                }
+                OldIp = configurationValues[0, 0];
+                SenderAddress = configurationValues[0, 1];
+                SenderName = configurationValues[0, 2];
+                SenderSmtp = configurationValues[0, 3];
+                SenderLogin = configurationValues[0, 4];
+                SenderPass = configurationValues[0, 5];
+                SenderPort = configurationValues[0, 6];
                 return true;
             }
             else {
@@ -136,25 +149,37 @@ namespace IpWatcherService {
         }
         // write current IP to configuration file
         public void WriteIpToFile () {
+            object obj = new object();
+            lock (obj) {
 
+            }
         }
         // register an events
         public void MakeLog () {
-            using (StreamWriter writer = new StreamWriter(logFile, true)) {
-                writer.WriteLine(String.Format(DateTime.Now.ToString()));
-                writer.Flush();
+            object obj = new object();
+            lock (obj) {
+                using (StreamWriter writer = new StreamWriter(logFile, true)) {
+                    writer.WriteLine(String.Format(DateTime.Now.ToString()));
+                    foreach (string test in configurationValues) {
+                        writer.WriteLine(test);                    }
+                    writer.Flush();
+                }
             }
         }
-        // fill a properties
+        // fill configurationValues file
         public bool ValuesChoicer (string valueFromFile) {
             // delete a space between words
             valueFromFile.Replace(" ","");
+            // fill
             for (int i = 0; configurationValues[0, i] != "END"; i++) {
                 if (valueFromFile.StartsWith(configurationValues[0, i])) {
                     configurationValues[1, i] = valueFromFile.Replace(configurationValues[0, i],"");
+                    // if value is empty
+                    if (configurationValues[1, i] == "") {
+                        return false; }
                 }
             }
-            return false;
+            return true;
         }
     }
 }
