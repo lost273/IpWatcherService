@@ -36,6 +36,9 @@ namespace IpWatcherService {
         bool enabled = true;
         string configurationFile ="config.txt";
         string logFile = "templog.txt";
+        string[,] configurationValues = { 
+            { "OLD_IP =", "SENDER_ADDRESS =", "SENDER_NAME =", "SENDER_SMTP =", "SENDER_LOGIN =", "SENDER_PASS =", "SENDER_PORT =", "RECIPIENT =","END"},
+        };
         public List<string> recipientsList;
         public string CurrentIp { get; set; }
         public string OldIp { get; set; }
@@ -51,10 +54,10 @@ namespace IpWatcherService {
             while (enabled) {
                 CurrentIp = this.GetIp();
                 //Notification every morning in 08:00
-                if (DateTime.Now.ToShortTimeString() == "8:00") { Notification(); }
-                //Notification if Ip was change
-                if ((CurrentIp != OldIp) && (CurrentIp != "error")){
-                    Notification();
+                if ((DateTime.Now.ToShortTimeString() == "8:00") && (ReadConfigurationValues())) { Notification(); }
+                //Notification if Ip was change and not got the error message and read all correct values from the file
+                if ((CurrentIp != OldIp) && (CurrentIp != "error") && (ReadConfigurationValues())){
+                    //Notification();
                     OldIp = CurrentIp;
                     WriteIpToFile();
                     MakeLog();
@@ -91,22 +94,17 @@ namespace IpWatcherService {
             if ((new FileInfo(configurationFile)).Exists) {
                 using (StreamReader sr = new StreamReader(configurationFile)) {
                     while (sr.Peek() >= 0) {
-                        ValuesChoicer(sr.ReadLine());
+                        if(ValuesChoicer(sr.ReadLine()) == false) return false;
                     }
                 }
                 return true;
             }
             else {
+                // create a configuration file without values but with a standards fields
                 using (StreamWriter sw = new StreamWriter(configurationFile, false, System.Text.Encoding.Default)) {
-                    sw.WriteLine("OLD_IP =");
-                    sw.WriteLine("SENDER_ADDRESS =");
-                    sw.WriteLine("SENDER_NAME =");
-                    sw.WriteLine("SENDER_SMTP =");
-                    sw.WriteLine("SENDER_LOGIN =");
-                    sw.WriteLine("SENDER_PASS =");
-                    sw.WriteLine("SENDER_PORT =");
-                    sw.WriteLine("RECIPIENT =");
-                    sw.WriteLine("RECIPIENT =");
+                    for (int i = 0; configurationValues[0,i] != "END"; i++) {
+                        sw.WriteLine(configurationValues[0,i]);
+                    }
                 }
                 return false;
             }
@@ -148,8 +146,9 @@ namespace IpWatcherService {
                 writer.Flush();
             }
         }
-        public void ValuesChoicer (string valueFromFile) {
+        public bool ValuesChoicer (string valueFromFile) {
 
+            return false;
         }
     }
 }
