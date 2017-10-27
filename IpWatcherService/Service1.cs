@@ -37,9 +37,10 @@ namespace IpWatcherService {
         string configurationFile ="config.txt";
         string logFile = "templog.txt";
         string[,] configurationValues = { 
-            { "OLD_IP=", "SENDER_ADDRESS=", "SENDER_NAME=", "SENDER_SMTP=", "SENDER_LOGIN=", "SENDER_PASS=", "SENDER_PORT=", "RECIPIENT=","END"},
+            { "OLD_IP=", "SENDER_ADDRESS=", "SENDER_NAME=", "SENDER_SMTP=", "SENDER_LOGIN=", "SENDER_PASS=", "SENDER_PORT=", "RECIPIENTS=","END"},
+            {"","","","","","","","","" }
         };
-        public List<string> recipientsList;
+        public List<string> recipientsList = new List<string>();
         public string CurrentIp { get; set; }
         public string OldIp { get; set; }
         public string SenderAddress { get; set; }
@@ -110,6 +111,11 @@ namespace IpWatcherService {
                 SenderLogin = configurationValues[0, 4];
                 SenderPass = configurationValues[0, 5];
                 SenderPort = configurationValues[0, 6];
+                recipientsList.Clear();
+                string[] emails = configurationValues[1, 7].Split(new char[] { ',' });
+                foreach (string s in emails) {
+                    recipientsList.Add(s);
+                }
                 return true;
             }
             else {
@@ -161,7 +167,11 @@ namespace IpWatcherService {
                 using (StreamWriter writer = new StreamWriter(logFile, true)) {
                     writer.WriteLine(String.Format(DateTime.Now.ToString()));
                     foreach (string test in configurationValues) {
-                        writer.WriteLine(test);                    }
+                        writer.WriteLine(test);
+                    }
+                    foreach (string test in recipientsList) {
+                        writer.WriteLine(test);
+                    }
                     writer.Flush();
                 }
             }
@@ -169,7 +179,7 @@ namespace IpWatcherService {
         // fill configurationValues file
         public bool ValuesChoicer (string valueFromFile) {
             // delete a space between words
-            valueFromFile.Replace(" ","");
+            valueFromFile = valueFromFile.Replace(" ","");
             // fill
             for (int i = 0; configurationValues[0, i] != "END"; i++) {
                 if (valueFromFile.StartsWith(configurationValues[0, i])) {
