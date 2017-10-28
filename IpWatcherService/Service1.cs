@@ -56,7 +56,7 @@ namespace IpWatcherService {
                 CurrentIp = this.GetIp();
                 //Notification every morning in 08:00
                 if ((DateTime.Now.ToShortTimeString() == "8:00") && (ReadConfigurationValues())) {
-                    Notification();
+                    //Notification();
                     MakeLog("Morning dispatch");
                 }
                 //Notification if Ip has changed and not got the error message and read all correct values from the file
@@ -122,7 +122,7 @@ namespace IpWatcherService {
                 return true;
             }
             else {
-                // create a configuration file without values but with a standards fields
+                // create a configuration file without values but with a standard fields
                 using (StreamWriter sw = new StreamWriter(configurationFile, false, System.Text.Encoding.Default)) {
                     for (int i = 0; configurationValues[0,i] != "END"; i++) {
                         sw.WriteLine(configurationValues[0,i]);
@@ -160,7 +160,18 @@ namespace IpWatcherService {
         public void WriteIpToFile () {
             object obj = new object();
             lock (obj) {
-
+                // read all file in an array
+                string[] stringsFromFile = File.ReadAllLines(configurationFile);
+                using (StreamWriter sw = new StreamWriter(configurationFile, false, System.Text.Encoding.Default)) {
+                    foreach (string s in stringsFromFile) {
+                        if (s.StartsWith(configurationValues[0, 0])) {
+                            sw.WriteLine($"{configurationValues[0, 0]}{CurrentIp}");
+                        }
+                        else {
+                            sw.WriteLine(s);
+                        }
+                    }
+                }
             }
         }
         // register an events
