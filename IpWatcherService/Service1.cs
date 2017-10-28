@@ -55,13 +55,16 @@ namespace IpWatcherService {
             while (enabled) {
                 CurrentIp = this.GetIp();
                 //Notification every morning in 08:00
-                if ((DateTime.Now.ToShortTimeString() == "8:00") && (ReadConfigurationValues())) { Notification(); }
-                //Notification if Ip was change and not got the error message and read all correct values from the file
+                if ((DateTime.Now.ToShortTimeString() == "8:00") && (ReadConfigurationValues())) {
+                    Notification();
+                    MakeLog("Morning dispatch");
+                }
+                //Notification if Ip has changed and not got the error message and read all correct values from the file
                 if ((CurrentIp != OldIp) && (CurrentIp != "error") && (ReadConfigurationValues())){
                     //Notification();
                     OldIp = CurrentIp;
                     WriteIpToFile();
-                    MakeLog();
+                    MakeLog("Ip has changed");
                 }
                 Thread.Sleep(6000);
             }
@@ -97,7 +100,7 @@ namespace IpWatcherService {
                         if(ValuesChoicer(sr.ReadLine()) == false) return false;
                     }
                 }
-                // check a values to null/empty_string and fill a properties
+                // check a values to empty_string and fill a properties
                 for (int i = 0; configurationValues[0, i] != "END"; i++) {
                     // if value is empty
                     if (configurationValues[1, i] == "") {
@@ -161,17 +164,12 @@ namespace IpWatcherService {
             }
         }
         // register an events
-        public void MakeLog () {
+        public void MakeLog (string logMessage) {
             object obj = new object();
             lock (obj) {
                 using (StreamWriter writer = new StreamWriter(logFile, true)) {
-                    writer.WriteLine(String.Format(DateTime.Now.ToString()));
-                    foreach (string test in configurationValues) {
-                        writer.WriteLine(test);
-                    }
-                    foreach (string test in recipientsList) {
-                        writer.WriteLine(test);
-                    }
+                    logMessage = $"{DateTime.Now.ToString()} - {logMessage} - {CurrentIp}.";
+                    writer.WriteLine(String.Format(logMessage));
                     writer.Flush();
                 }
             }
