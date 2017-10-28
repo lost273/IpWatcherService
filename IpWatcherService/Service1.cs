@@ -56,12 +56,12 @@ namespace IpWatcherService {
                 CurrentIp = this.GetIp();
                 //Notification every morning in 08:00
                 if ((DateTime.Now.ToShortTimeString() == "8:00") && (ReadConfigurationValues())) {
-                    //Notification();
+                    Notification();
                     MakeLog("Morning dispatch");
                 }
                 //Notification if Ip has changed and not got the error message and read all correct values from the file
                 if ((CurrentIp != OldIp) && (CurrentIp != "error") && (ReadConfigurationValues())){
-                    //Notification();
+                    Notification();
                     OldIp = CurrentIp;
                     WriteIpToFile();
                     MakeLog("Ip has changed");
@@ -107,13 +107,13 @@ namespace IpWatcherService {
                         return false;
                     }
                 }
-                OldIp = configurationValues[0, 0];
-                SenderAddress = configurationValues[0, 1];
-                SenderName = configurationValues[0, 2];
-                SenderSmtp = configurationValues[0, 3];
-                SenderLogin = configurationValues[0, 4];
-                SenderPass = configurationValues[0, 5];
-                SenderPort = configurationValues[0, 6];
+                OldIp = configurationValues[1, 0];
+                SenderAddress = configurationValues[1, 1];
+                SenderName = configurationValues[1, 2];
+                SenderSmtp = configurationValues[1, 3];
+                SenderLogin = configurationValues[1, 4];
+                SenderPass = configurationValues[1, 5];
+                SenderPort = configurationValues[1, 6];
                 recipientsList.Clear();
                 string[] emails = configurationValues[1, 7].Split(new char[] { ',' });
                 foreach (string s in emails) {
