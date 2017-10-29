@@ -58,12 +58,12 @@ namespace IpWatcherService {
                 CurrentIp = this.GetIp();
                 //Notification every morning in 08:00
                 if ((DateTime.Now.ToShortTimeString() == "8:00") && (ReadConfigurationValues())) {
-                    //Notification();
+                    Notification();
                     MakeLog("Morning dispatch");
                 }
                 //Notification if Ip has changed and not got the error message and read all correct values from the file
                 if ((CurrentIp != OldIp) && (CurrentIp != "error") && (ReadConfigurationValues())){
-                    //Notification();
+                    Notification();
                     OldIp = CurrentIp;
                     ChangeValueInFile(configurationValues[0, 0], CurrentIp);
                     MakeLog("Ip has changed");
