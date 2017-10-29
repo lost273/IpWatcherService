@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Net.Mail;
+using System.Security.Cryptography;
 using System.ServiceProcess;
 using System.Text;
 using System.Threading;
@@ -36,6 +37,7 @@ namespace IpWatcherService {
         bool enabled = true;
         string configurationFile ="config.txt";
         string logFile = "templog.txt";
+        string keyForEncryption = "!*eRcR12D";
         string[,] configurationValues = { 
             { "OLD_IP=", "SENDER_ADDRESS=", "SENDER_NAME=", "SENDER_SMTP=", "SENDER_LOGIN=", "SENDER_PASS=", "SENDER_PORT=", "RECIPIENTS=","END"},
             {"","","","","","","","","" }
@@ -56,14 +58,14 @@ namespace IpWatcherService {
                 CurrentIp = this.GetIp();
                 //Notification every morning in 08:00
                 if ((DateTime.Now.ToShortTimeString() == "8:00") && (ReadConfigurationValues())) {
-                    Notification();
+                    //Notification();
                     MakeLog("Morning dispatch");
                 }
                 //Notification if Ip has changed and not got the error message and read all correct values from the file
                 if ((CurrentIp != OldIp) && (CurrentIp != "error") && (ReadConfigurationValues())){
-                    Notification();
+                    //Notification();
                     OldIp = CurrentIp;
-                    WriteIpToFile();
+                    ChangeValueInFile(configurationValues[0, 0], CurrentIp);
                     MakeLog("Ip has changed");
                 }
                 Thread.Sleep(60000);
@@ -112,7 +114,15 @@ namespace IpWatcherService {
                 SenderName = configurationValues[1, 2];
                 SenderSmtp = configurationValues[1, 3];
                 SenderLogin = configurationValues[1, 4];
-                SenderPass = configurationValues[1, 5];
+                // implement Encryption Algorithm for password
+                if (configurationValues[1, 5].StartsWith("#ENC#")) {
+                    SenderPass = DecryptTextFrom3DES(configurationValues[1, 5].Replace("#ENC#", ""), keyForEncryption);
+                }
+                else {
+                    SenderPass = configurationValues[1, 5];
+                    configurationValues[1, 5] = EncryptTextTo3DES(configurationValues[1, 5], keyForEncryption);
+                    ChangeValueInFile(configurationValues[0, 5], "#ENC#" + configurationValues[1, 5]);
+                }
                 SenderPort = configurationValues[1, 6];
                 recipientsList.Clear();
                 string[] emails = configurationValues[1, 7].Split(new char[] { ',' });
@@ -157,15 +167,15 @@ namespace IpWatcherService {
             }
         }
         // write current IP to configuration file
-        public void WriteIpToFile () {
+        public void ChangeValueInFile (string indexString, string changeString) {
             object obj = new object();
             lock (obj) {
                 // read all file in an array
                 string[] stringsFromFile = File.ReadAllLines(configurationFile);
                 using (StreamWriter sw = new StreamWriter(configurationFile, false, System.Text.Encoding.Default)) {
                     foreach (string s in stringsFromFile) {
-                        if (s.StartsWith(configurationValues[0, 0])) {
-                            sw.WriteLine($"{configurationValues[0, 0]}{CurrentIp}");
+                        if (s.StartsWith(indexString)) {
+                            sw.WriteLine($"{indexString}{changeString}");
                         }
                         else {
                             sw.WriteLine(s);
@@ -199,6 +209,32 @@ namespace IpWatcherService {
                 }
             }
             return true;
+        }
+        //Triple Data Encryption Algorithm
+        private static TripleDES Create3DES(string key) {
+            MD5 md5 = new MD5CryptoServiceProvider();
+            TripleDES des = new TripleDESCryptoServiceProvider();
+            des.Key = md5.ComputeHash(Encoding.Unicode.GetBytes(key));
+            des.IV = new byte[des.BlockSize / 8];
+            return des;
+        }
+        // encrypt
+        public static string EncryptTextTo3DES(string plainText, string key) {
+            TripleDES des = Create3DES(key);
+            ICryptoTransform ct = des.CreateEncryptor();
+            byte[] input = Encoding.Unicode.GetBytes(plainText);
+            byte[] resArr = ct.TransformFinalBlock(input, 0, input.Length);
+            string result = Convert.ToBase64String(resArr);
+            return result;
+        }
+
+        // decrypt
+        public static string DecryptTextFrom3DES(string cypherText, string key) {
+            byte[] b = Convert.FromBase64String(cypherText);
+            TripleDES des = Create3DES(key);
+            ICryptoTransform ct = des.CreateDecryptor();
+            byte[] output = ct.TransformFinalBlock(b, 0, b.Length);
+            return Encoding.Unicode.GetString(output);
         }
     }
 }
