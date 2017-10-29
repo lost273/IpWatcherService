@@ -66,7 +66,7 @@ namespace IpWatcherService {
                     WriteIpToFile();
                     MakeLog("Ip has changed");
                 }
-                Thread.Sleep(6000);
+                Thread.Sleep(60000);
             }
         }
         public void Stop () {
