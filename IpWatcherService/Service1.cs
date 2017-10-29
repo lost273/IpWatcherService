@@ -35,8 +35,9 @@ namespace IpWatcherService {
 
     class Watcher {
         bool enabled = true;
-        string configurationFile ="config.txt";
-        string logFile = "templog.txt";
+        // get a full path for service process !!!
+        string configurationFile = (new FileInfo(Process.GetCurrentProcess().MainModule.FileName)).DirectoryName + "\\config.txt";
+        string logFile = (new FileInfo(Process.GetCurrentProcess().MainModule.FileName)).DirectoryName + "\\templog.txt";
         string keyForEncryption = "!*eRcR12D";
         string[,] configurationValues = { 
             { "OLD_IP=", "SENDER_ADDRESS=", "SENDER_NAME=", "SENDER_SMTP=", "SENDER_LOGIN=", "SENDER_PASS=", "SENDER_PORT=", "RECIPIENTS=","END"},

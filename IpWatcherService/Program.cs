@@ -23,9 +23,8 @@ namespace IpWatcherService {
                 MessageBox.Show("Приложение должно быть установлено в виде службы Windows и не может быть запущено интерактивно.");
                 #endif
             }
-            else {
+            else 
                 ServiceBase.Run(ServicesToRun);
-            }
         }
     }
 }
