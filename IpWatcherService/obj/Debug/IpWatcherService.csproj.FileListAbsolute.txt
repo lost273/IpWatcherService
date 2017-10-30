@@ -7,3 +7,4 @@ D:\prog\VSProj\GIT\IpWatcherService\IpWatcherService\bin\Debug\IpWatcherService.
 D:\prog\VSProj\GIT\IpWatcherService\IpWatcherService\obj\Debug\IpWatcherService.csprojResolveAssemblyReference.cache
 D:\prog\VSProj\GIT\IpWatcherService\IpWatcherService\obj\Debug\IpWatcherService.exe
 D:\prog\VSProj\GIT\IpWatcherService\IpWatcherService\obj\Debug\IpWatcherService.pdb
+D:\programs\Projects\GIT\IpWatcherService\IpWatcherService\obj\Debug\IpWatcherService.csprojResolveAssemblyReference.cache

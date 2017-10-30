@@ -63,11 +63,16 @@ namespace IpWatcherService {
                     MakeLog("Morning dispatch");
                 }
                 //Notification if Ip has changed and not got the error message and read all correct values from the file
-                if ((CurrentIp != OldIp) && (CurrentIp != "error") && (ReadConfigurationValues())){
-                    Notification();
+                if ((CurrentIp != "error") && (CurrentIp != OldIp)){
+                    string mailError = "";
+                    if (ReadConfigurationValues()) {
+                        Notification();
+                    }
+                    else mailError = ",but not sent to email - errors in configuration file";
+
                     OldIp = CurrentIp;
                     ChangeValueInFile(configurationValues[0, 0], CurrentIp);
-                    MakeLog("Ip has changed");
+                    MakeLog("Ip has changed" + mailError);
                 }
                 Thread.Sleep(60000);
             }
