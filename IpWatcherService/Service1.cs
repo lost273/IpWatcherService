@@ -36,8 +36,9 @@ namespace IpWatcherService {
     class Watcher {
         bool enabled = true;
         // get a full path for service process !!!
-        string configurationFile = (new FileInfo(Process.GetCurrentProcess().MainModule.FileName)).DirectoryName + "\\config.txt";
-        string logFile = (new FileInfo(Process.GetCurrentProcess().MainModule.FileName)).DirectoryName + "\\templog.txt";
+        static string fullPath = (new FileInfo(Process.GetCurrentProcess().MainModule.FileName)).DirectoryName;
+        string configurationFile = fullPath + "\\config.txt";
+        string logFile = fullPath + "\\templog.txt";
         string keyForEncryption = "!*eRcR12D";
         string[,] configurationValues = { 
             { "OLD_IP=", "SENDER_ADDRESS=", "SENDER_NAME=", "SENDER_SMTP=", "SENDER_LOGIN=", "SENDER_PASS=", "SENDER_PORT=", "RECIPIENTS=","DISPATCH_TIMER=","END"},
@@ -87,7 +88,6 @@ namespace IpWatcherService {
             HttpWebRequest httpWebRequest;
             HttpWebResponse httpWebResponse;
             Mutex getip = new Mutex();
-
             getip.WaitOne();
             try {
                 httpWebRequest = (HttpWebRequest)HttpWebRequest.Create("http://checkip.dyndns.org");
