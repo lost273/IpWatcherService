@@ -40,8 +40,8 @@ namespace IpWatcherService {
         string logFile = (new FileInfo(Process.GetCurrentProcess().MainModule.FileName)).DirectoryName + "\\templog.txt";
         string keyForEncryption = "!*eRcR12D";
         string[,] configurationValues = { 
-            { "OLD_IP=", "SENDER_ADDRESS=", "SENDER_NAME=", "SENDER_SMTP=", "SENDER_LOGIN=", "SENDER_PASS=", "SENDER_PORT=", "RECIPIENTS=","END"},
-            {"","","","","","","","","" }
+            { "OLD_IP=", "SENDER_ADDRESS=", "SENDER_NAME=", "SENDER_SMTP=", "SENDER_LOGIN=", "SENDER_PASS=", "SENDER_PORT=", "RECIPIENTS=","DISPATCH_TIMER=","END"},
+            {"","","","","","","","","","" }
         };
         public List<string> recipientsList = new List<string>();
         public string CurrentIp { get; set; }
@@ -52,13 +52,14 @@ namespace IpWatcherService {
         public string SenderLogin { get; set; }
         public string SenderPass { get; set; }
         public string SenderPort { get; set; }
+        public string DispatchTimer { get; set; }
         public void Start () {
             // if file not exist, create them, return false
             enabled = ReadConfigurationValues();
             while (enabled) {
                 CurrentIp = this.GetIp();
-                //Notification every morning in 08:00
-                if ((DateTime.Now.ToShortTimeString() == "8:00") && (ReadConfigurationValues())) {
+                //Notification at a specific time
+                if ((DateTime.Now.ToShortTimeString() == DispatchTimer) && (ReadConfigurationValues())) {
                     Notification();
                     MakeLog("Morning dispatch");
                 }
@@ -135,6 +136,7 @@ namespace IpWatcherService {
                 foreach (string s in emails) {
                     recipientsList.Add(s);
                 }
+                DispatchTimer = configurationValues[1, 8];
                 return true;
             }
             else {
