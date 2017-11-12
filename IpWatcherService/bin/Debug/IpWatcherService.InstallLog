@@ -74,3 +74,11 @@
    assemblypath = d:\prog\VSProj\GIT\IpWatcherService\IpWatcherService\bin\Debug\IpWatcherService.exe
    logfile = d:\prog\VSProj\GIT\IpWatcherService\IpWatcherService\bin\Debug\IpWatcherService.InstallLog
    logtoconsole = 
+Выполняется удаление сборки 'd:\prog\VSProj\GIT\IpWatcherService\IpWatcherService\bin\Debug\IpWatcherService.exe'.
+Затронуты следующие параметры:
+   assemblypath = d:\prog\VSProj\GIT\IpWatcherService\IpWatcherService\bin\Debug\IpWatcherService.exe
+   logfile = d:\prog\VSProj\GIT\IpWatcherService\IpWatcherService\bin\Debug\IpWatcherService.InstallLog
+   logtoconsole = 
+Выполняется удаление источника EventLog IpWatcherService.
+Выполняется удаление службы IpWatcherService из системы...
+Служба IpWatcherService успешно удалена из системы.
